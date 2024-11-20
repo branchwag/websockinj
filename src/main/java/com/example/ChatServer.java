@@ -1,15 +1,14 @@
 package com.example;
 
-import javax.websocket.*;
-import javax.websocket.server.ServerEndpoint;
+import jakarta.websocket.*;
+import jakarta.websocket.server.ServerEndpoint;
 import java.io.IOException;
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.CopyOnWriteArraySet;
 
 @ServerEndpoint("/chat")
 public class ChatServer {
-	private static final Set<Session> sessions = Collections.synchronizedSet(new HashSet<>());
+	private static final Set<Session> sessions = new CopyOnWriteArraySet<>();
 
 	@OnOpen
 	public void onOpen(Session session) {
@@ -34,6 +33,7 @@ public class ChatServer {
 	public void onError(Throwable error) {
 		error.printStackTrace();
 	}
+
 
 	private void broadcast (String message) {
 		synchronized (sessions) {

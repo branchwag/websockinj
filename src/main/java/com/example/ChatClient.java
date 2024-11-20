@@ -1,8 +1,8 @@
 package com.example;
 
+import jakarta.websocket.*;
+import java.io.IOException;
 import java.net.URI;
-import java.util.Scanner;
-import javax.websocket.*;
 
 @ClientEndpoint
 public class ChatClient {
@@ -21,7 +21,7 @@ public class ChatClient {
 
 	@OnClose
 	public void onClose(Session session, CloseReason closeReason) {
-		System.out.println("Disconnected from server");
+		System.out.println("Session closed: " + closeReason.getReasonPhrase());
 	}
 
 	public void sendMessage(String message) {
@@ -32,22 +32,22 @@ public class ChatClient {
 		}
 	}
 
-	public static void main(String[] args) {
-		try {
-			WebSocketContainer container = ContainerProvider.getWebSocketContainer();
-			ChatClient client = new ChatClient();
-			container.connectToServer(client, new URI("ws://localhost:8025/websocket/chat"));
-
-			Scanner scanner = new Scanner(System.in);
-			System.out.println("Enter messages (type 'exit' to quit):");
-
-			String message;
-			while (!(message = scanner.nextLine()).equalsIgnoreCase("exit")) {
-				client.sendMessage(message);
-			}
-
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
+	//public static void main(String[] args) {
+	//	try {
+	//		WebSocketContainer container = ContainerProvider.getWebSocketContainer();
+	//		ChatClient client = new ChatClient();
+	//		container.connectToServer(client, new URI("ws://localhost:8025/websocket/chat"));
+	//
+	//		Scanner scanner = new Scanner(System.in);
+	//		System.out.println("Enter messages (type 'exit' to quit):");
+	//
+	//		String message;
+	//		while (!(message = scanner.nextLine()).equalsIgnoreCase("exit")) {
+	//			client.sendMessage(message);
+	//		}
+	//
+	//	} catch (Exception e) {
+	//		e.printStackTrace();
+	//	}
+	//}
 }

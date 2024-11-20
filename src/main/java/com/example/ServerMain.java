@@ -8,7 +8,7 @@ public class ServerMain {
 	public static void main(String[] args) {
 
 		try { 
-			Server server = new Server("localhost", 8025, "/websockets", null, ServerConfig.class, ChatServer.class);
+			Server server = new Server("localhost", 8025, "/websockets", null, ChatServer.class);
 			server.start();
 			System.out.println("Chat server started on ws://localhost:8025/websocket/chat");
 			System.out.println("Press enter to stop the server...");
