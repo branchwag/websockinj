@@ -8,3 +8,9 @@ mvn clean package
 mvn exec:java -Dexec.mainClass="com.example.ServerMain"
 mvn exec:java -Dexec.mainClass="com.example.ChatClient"
 ```
+
+or  
+
+```
+mvn exec:java  
+```

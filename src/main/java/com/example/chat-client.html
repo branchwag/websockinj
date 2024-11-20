@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebSocket Chat Client</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 0 20px;
+            background-color: #333333;
+        }
+        #chatBox {
+            height: 400px;
+            border: 1px solid #ccc;
+            margin: 20px 0;
+            padding: 10px;
+            overflow-y: auto;
+            background-color: #D3D3D3;
+        }
+        #messageInput {
+            width: 70%;
+            padding: 8px;
+            margin-right: 10px;
+            background-color: #D3D3D3;
+        }
+        button {
+            padding: 8px 15px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        button:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+        h1 {
+            color: #ffffff;
+        }
+        .status {
+            color: #666;
+            font-style: italic;
+        }
+        .error {
+            color: #ff0000;
+        }
+        .message {
+            margin: 5px 0;
+            padding: 5px;
+            border-bottom: 1px solid #eee;
+        }
+    </style>
+</head>
+<body>
+    <h1>WebSocket Chat Client</h1>
+    <div>
+        <button id="connectButton" onclick="connect()">Connect</button>
+        <button id="disconnectButton" onclick="disconnect()" disabled>Disconnect</button>
+        <span id="connectionStatus" class="status">Not connected</span>
+    </div>
+    <div id="chatBox"></div>
+    <div>
+        <input type="text" id="messageInput" placeholder="Type your message..." disabled>
+        <button id="sendButton" onclick="sendMessage()" disabled>Send</button>
+    </div>
+
+    <script>
+        let ws;
+        const chatBox = document.getElementById('chatBox');
+        const messageInput = document.getElementById('messageInput');
+        const sendButton = document.getElementById('sendButton');
+        const connectButton = document.getElementById('connectButton');
+        const disconnectButton = document.getElementById('disconnectButton');
+        const connectionStatus = document.getElementById('connectionStatus');
+
+        function connect() {
+            try {
+                ws = new WebSocket('ws://localhost:8025/websockets/chat');
+                
+                ws.onopen = function() {
+                    appendMessage('Connected to server', 'status');
+                    connectionStatus.textContent = 'Connected';
+                    messageInput.disabled = false;
+                    sendButton.disabled = false;
+                    connectButton.disabled = true;
+                    disconnectButton.disabled = false;
+                };
+
+                ws.onmessage = function(event) {
+                    appendMessage(event.data, 'message');
+                };
+
+                ws.onclose = function() {
+                    appendMessage('Disconnected from server', 'status');
+                    setDisconnectedState();
+                };
+
+                ws.onerror = function(error) {
+                    appendMessage('Error: ' + error.message, 'error');
+                    setDisconnectedState();
+                };
+            } catch (error) {
+                appendMessage('Connection error: ' + error.message, 'error');
+                setDisconnectedState();
+            }
+        }
+
+        function disconnect() {
+            if (ws) {
+                ws.close();
+            }
+        }
+
+        function setDisconnectedState() {
+            connectionStatus.textContent = 'Not connected';
+            messageInput.disabled = true;
+            sendButton.disabled = true;
+            connectButton.disabled = false;
+            disconnectButton.disabled = true;
+        }
+
+        function sendMessage() {
+            const message = messageInput.value.trim();
+            if (message && ws) {
+                ws.send(message);
+                messageInput.value = '';
+            }
+        }
+
+        function appendMessage(message, type) {
+            const messageDiv = document.createElement('div');
+            messageDiv.classList.add(type);
+            messageDiv.textContent = message;
+            chatBox.appendChild(messageDiv);
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+
+        messageInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                sendMessage();
+            }
+        });
+    </script>
+</body>
+</html>
